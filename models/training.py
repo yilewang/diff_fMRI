@@ -16,18 +16,18 @@ from decoder import VAE_Decoder
 class VariationalAutoEncoder(nn.Module):
     def __init__(self, input_dim, z_dim, h_dim=200):
         super().__init__()
-        # encoder
-        self.img_2hid = nn.Linear(input_dim, h_dim)
+        # # encoder
+        # self.img_2hid = nn.Linear(input_dim, h_dim)
 
-        # one for mu and one for stds, note how we only output
-        # diagonal values of covariance matrix. Here we assume
-        # the pixels are conditionally independent 
-        self.hid_2mu = nn.Linear(h_dim, z_dim)
-        self.hid_2sigma = nn.Linear(h_dim, z_dim)
+        # # one for mu and one for stds, note how we only output
+        # # diagonal values of covariance matrix. Here we assume
+        # # the pixels are conditionally independent 
+        # self.hid_2mu = nn.Linear(h_dim, z_dim)
+        # self.hid_2sigma = nn.Linear(h_dim, z_dim)
 
-        # decoder
-        self.z_2hid = nn.Linear(z_dim, h_dim)
-        self.hid_2img = nn.Linear(h_dim, input_dim)
+        # # decoder
+        # self.z_2hid = nn.Linear(z_dim, h_dim)
+        # self.hid_2img = nn.Linear(h_dim, input_dim)
 
     def encode(self, x):
         h, mu, sigma = VAE_Encoder(x)
@@ -55,9 +55,9 @@ class VariationalAutoEncoder(nn.Module):
 
 # Configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-INPUT_DIM = 784
-Z_DIM = 20
-H_DIM = 200
+INPUT_DIM = 160*80
+Z_DIM = 200
+H_DIM = 400
 NUM_EPOCHS = 10
 BATCH_SIZE = 32
 LR_RATE = 3e-4
@@ -106,8 +106,7 @@ train(NUM_EPOCHS, model, optimizer, loss_fn)
 
 
 ### Inference
-
-def inference(digit, num_examples=1):
+def inference(sample, num_examples=1):
     """
     Generates (num_examples)
     """
@@ -126,10 +125,10 @@ def inference(digit, num_examples=1):
             mu, sigma = model.encode(images[d].view(1, 784))
         encodings.append((mu, sigma))
 
-    mu, sigma = encodings[digit]
+    mu, sigma = encodings[sample]
     for example in range(num_examples):
         epsilon = torch.randn_like(sigma)
         z = mu + sigma * epsilon
         out = model.decode(z)
         out = out.view(-1, 1, 28, 28)
-        save_image(out, f"generated_{digit}_ex{example}.png")
+        save_image(out, f"generated_{sample}_ex{example}.png")
