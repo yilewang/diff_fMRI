@@ -19,9 +19,10 @@ class NSD_Subject():
     isomap_fitted_rh = None
     def __init__(self, subj_id, basedir=None, maskdir=None, designdir=None):
         self.subj_id = subj_id
-        self.basedir = f'/Volumes/side_project/nsd/fsaverage/{self.subj_id}'
-        self.maskdir = f'/Volumes/side_project/nsd/fsaverage/roi_masks'
-        self.designdir = f'/Volumes/side_project/nsd/fsaverage/{self.subj_id}/nsd_design'
+        self.root_path = "/mnt/d/nsd_fsaverage"
+        self.basedir = f'{self.root_path}/fsaverage/{self.subj_id}'
+        self.maskdir = f'{self.root_path}/fsaverage/roi_masks'
+        self.designdir = f'{self.root_path}/fsaverage/{self.subj_id}/nsd_design'
         self.beta_session = 40
         self.beta_sub_session = 2 # avoid memory error
         self.session_num = 37
@@ -105,9 +106,9 @@ class NSD_Subject():
             # export the isomap as images
             im = Image.fromarray(Z.astype(np.uint8))
             # if path does not exist, create it
-            if not os.path.exists(f"/Volumes/side_project/nsd/fsaverage/{self.subj_id}/isomaps"):
-                os.makedirs(f"/Volumes/side_project/nsd/fsaverage/{self.subj_id}/isomaps")
-            im.save(f"/Volumes/side_project/nsd/fsaverage/{self.subj_id}/isomaps/{img_id}_{hemi}.png")
+            if not os.path.exists(f"{self.root_path}/fsaverage/{self.subj_id}/isomaps"):
+                os.makedirs(f"{self.root_path}/fsaverage/{self.subj_id}/isomaps")
+            im.save(f"{self.root_path}/fsaverage/{self.subj_id}/isomaps/{img_id}_{hemi}.png")
 
     def main(self):
         """
@@ -149,7 +150,9 @@ class NSD_Subject():
         print("step6 done")
 
 if __name__ == "__main__":
-    subj1 = NSD_Subject("subj01")
-    subj1.main()
-    subj2 = NSD_Subject("subj02")
-    print(subj2.isomap_fitted_lh)
+    for i in range(3,9):
+        print(f"subj0{i} starts")
+        subj = NSD_Subject(f"subj0{i}")
+        subj.main()
+    # subj2 = NSD_Subject("subj02")
+    # print(subj2.isomap_fitted_lh)
